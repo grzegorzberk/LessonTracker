@@ -23,6 +23,24 @@ extension Lesson {
         return self.duration * self.hourlyRate
     }
     
+    var isUpcoming: Bool {
+        guard let date = self.date else { return false }
+        return date > Date()
+    }
+    
+    var isPast: Bool {
+        guard let date = self.date else { return false }
+        return date < Date()
+    }
+    
+    var lessonStatus: LessonStatus {
+        if isPast {
+            return isPaid ? .completed : .unpaid
+        } else {
+            return .upcoming
+        }
+    }
+    
     static func createFetchRequest() -> NSFetchRequest<Lesson> {
         let request: NSFetchRequest<Lesson> = Lesson.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(keyPath: \Lesson.date, ascending: false)]
@@ -46,6 +64,52 @@ extension Lesson {
         } catch {
             print("Błąd pobierania lekcji: \(error)")
             return []
+        }
+    }
+    
+    static func fetchUpcomingLessons(context: NSManagedObjectContext, days: Int = 7) -> [Lesson] {
+        let now = Date()
+        let future = Calendar.current.date(byAdding: .day, value: days, to: now) ?? now
+        
+        let request: NSFetchRequest<Lesson> = Lesson.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \Lesson.date, ascending: true)]
+        request.predicate = NSPredicate(format: "date >= %@ AND date <= %@", now as NSDate, future as NSDate)
+        
+        do {
+            return try context.fetch(request)
+        } catch {
+            print("Błąd pobierania nadchodzących lekcji: \(error)")
+            return []
+        }
+    }
+}
+
+enum LessonStatus {
+    case upcoming
+    case completed
+    case unpaid
+    
+    var color: String {
+        switch self {
+        case .upcoming: return "systemBlue"
+        case .completed: return "systemGreen"
+        case .unpaid: return "systemOrange"
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .upcoming: return "calendar"
+        case .completed: return "checkmark.circle"
+        case .unpaid: return "exclamationmark.circle"
+        }
+    }
+    
+    var label: String {
+        switch self {
+        case .upcoming: return "Nadchodząca"
+        case .completed: return "Zakończona"
+        case .unpaid: return "Nieopłacona"
         }
     }
 }

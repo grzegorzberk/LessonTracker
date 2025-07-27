@@ -1,5 +1,5 @@
 //
-//  AddLessonView.swift
+//  EditLessonView.swift
 //  LessonTracker
 //
 //  Created by Grzegorz Berk on 27/07/2025.
@@ -7,18 +7,30 @@
 
 import SwiftUI
 
-struct AddLessonView: View {
+struct EditLessonView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel: LessonViewModel
+    let lesson: Lesson
     
     @State private var selectedStudentId: UUID?
     @State private var date = Date()
     @State private var duration: Double = 1.0
     @State private var hourlyRate: Double = 50.0
     @State private var notes = ""
-    @State private var addToCalendar = true
-    @State private var showAddStudentAlert = false
-    @State private var newStudentName = ""
+    @State private var isPaid = false
+    
+    init(viewModel: LessonViewModel, lesson: Lesson) {
+        self.viewModel = viewModel
+        self.lesson = lesson
+        
+        // Inicjalizuj wartości z istniejącej lekcji
+        _selectedStudentId = State(initialValue: lesson.student?.id)
+        _date = State(initialValue: lesson.date ?? Date())
+        _duration = State(initialValue: lesson.duration)
+        _hourlyRate = State(initialValue: lesson.hourlyRate)
+        _notes = State(initialValue: lesson.notes ?? "")
+        _isPaid = State(initialValue: lesson.isPaid)
+    }
     
     var body: some View {
         ZStack {
@@ -32,7 +44,7 @@ struct AddLessonView: View {
             VStack(spacing: 0) {
             // Nagłówek
             HStack {
-                Text("Dodaj nową lekcję")
+                Text("Edytuj lekcję")
                     .font(.title2)
                     .fontWeight(.medium)
                 
@@ -60,14 +72,8 @@ struct AddLessonView: View {
                             .foregroundColor(.primary)
                         
                         if viewModel.students.isEmpty {
-                            HStack {
-                                Image(systemName: "exclamationmark.triangle")
-                                    .foregroundColor(.orange)
-                                Text("Brak uczniów. Dodaj ucznia, aby kontynuować.")
-                                    .foregroundColor(.orange)
-                            }
-                            .padding()
-                            .background(RoundedRectangle(cornerRadius: 8).fill(.orange.opacity(0.1)))
+                            Text("Brak uczniów w systemie.")
+                                .foregroundColor(.red)
                         } else {
                             Picker("Wybierz ucznia", selection: $selectedStudentId) {
                                 Text("Wybierz ucznia").tag(nil as UUID?)
@@ -78,12 +84,6 @@ struct AddLessonView: View {
                             .pickerStyle(.menu)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                        
-                        Button("+ Dodaj nowego ucznia") {
-                            showAddStudentAlert = true
-                        }
-                        .buttonStyle(.borderless)
-                        .foregroundColor(.blue)
                     }
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 8).fill(Color(.controlBackgroundColor).opacity(0.5)))
@@ -161,33 +161,14 @@ struct AddLessonView: View {
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 8).fill(Color(.controlBackgroundColor).opacity(0.5)))
                     
-                    // Kalendarz
+                    // Status płatności
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Synchronizacja")
+                        Text("Status płatności")
                             .font(.headline)
                             .foregroundColor(.primary)
                         
-                        if viewModel.calendarAccessGranted {
-                            Toggle("Dodaj do kalendarza", isOn: $addToCalendar)
-                        } else {
-                            HStack {
-                                Image(systemName: "calendar.badge.exclamationmark")
-                                    .foregroundColor(.orange)
-                                VStack(alignment: .leading) {
-                                    Text("Brak dostępu do kalendarza")
-                                        .foregroundColor(.orange)
-                                    Button("Udziel dostępu") {
-                                        Task {
-                                            await viewModel.checkCalendarAccess()
-                                        }
-                                    }
-                                    .buttonStyle(.plain)
-                                    .foregroundColor(.blue)
-                                    .font(.caption)
-                                }
-                                Spacer()
-                            }
-                        }
+                        Toggle("Opłacone", isOn: $isPaid)
+                            .toggleStyle(.switch)
                     }
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 8).fill(Color(.controlBackgroundColor).opacity(0.5)))
@@ -206,16 +187,22 @@ struct AddLessonView: View {
                 
                 Spacer()
                 
-                Button("Zapisz lekcję") {
+                Button("Zapisz zmiany") {
                     if let studentId = selectedStudentId {
                         Task {
-                            await viewModel.addLesson(
+                            await viewModel.updateLesson(
+                                lesson: lesson,
                                 studentId: studentId,
                                 date: date,
                                 duration: duration,
                                 hourlyRate: hourlyRate,
                                 notes: notes
                             )
+                            
+                            if isPaid != lesson.isPaid {
+                                viewModel.toggleLessonPaid(lesson: lesson)
+                            }
+                            
                             dismiss()
                         }
                     }
@@ -233,40 +220,6 @@ struct AddLessonView: View {
             .shadow(radius: 10)
             .onTapGesture {
                 // Nie rób nic - to zapobiega zamknięciu gdy klikniesz na formularz
-            }
-        }
-        .alert("Dodaj nowego ucznia", isPresented: $showAddStudentAlert) {
-            TextField("Imię i nazwisko", text: $newStudentName)
-            
-            Button("Anuluj", role: .cancel) {}
-            
-            Button("Dodaj") {
-                if !newStudentName.isEmpty {
-                    viewModel.addStudent(name: newStudentName)
-                    newStudentName = ""
-                    
-                    // Automatycznie wybieramy nowo dodanego studenta
-                    if let newStudent = viewModel.students.last {
-                        selectedStudentId = newStudent.id
-                    }
-                }
-            }
-        } message: {
-            Text("Podaj imię i nazwisko nowego ucznia")
-        }
-        .onAppear {
-            // Sprawdź dostęp do kalendarza przy pierwszym uruchomieniu
-            Task {
-                await viewModel.checkCalendarAccess()
-            }
-            
-            // Pobierz wartości domyślne dla nowej lekcji
-            if viewModel.students.count == 1 {
-                selectedStudentId = viewModel.students.first?.id
-            }
-            
-            if let lastLesson = viewModel.lessons.first {
-                hourlyRate = lastLesson.hourlyRate
             }
         }
     }

@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var selectedTab = 0
     @StateObject private var lessonViewModel = LessonViewModel()
+    @StateObject private var calendarViewModel = CalendarViewModel()
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -25,16 +26,29 @@ struct ContentView: View {
                 }
                 .tag(1)
             
+            CalendarView(viewModel: calendarViewModel, lessonViewModel: lessonViewModel)
+                .tabItem {
+                    Label("Kalendarz", systemImage: "calendar")
+                }
+                .tag(2)
+            
             ReportGeneratorView()
                 .tabItem {
                     Label("Raporty", systemImage: "chart.bar.doc.horizontal")
                 }
-                .tag(2)
+                .tag(3)
         }
         .padding()
         .frame(minWidth: 800, minHeight: 600)
         .onReceive(NotificationCenter.default.publisher(for: Notification.Name("NewLesson"))) { _ in
             selectedTab = 0
         }
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+            .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
     }
 }

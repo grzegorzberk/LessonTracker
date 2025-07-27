@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788.4" systemVersion="24F74" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Lesson" representedClassName="Lesson" isAbstract="YES" syncable="YES" codeGenerationType="class">
+    <entity name="Lesson" representedClassName="Lesson" syncable="YES" codeGenerationType="class">
+        <attribute name="calendarEventId" optional="YES" attributeType="String"/>
         <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="duration" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="hourlyRate" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isPaid" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="syncedWithCalendar" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <relationship name="student" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Student" inverseName="lessons" inverseEntity="Student"/>
     </entity>
-    <entity name="Student" representedClassName="Student" isAbstract="YES" syncable="YES" codeGenerationType="class">
+    <entity name="Student" representedClassName="Student" syncable="YES" codeGenerationType="class">
+        <attribute name="billingId" optional="YES" attributeType="String"/>
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="firstName" optional="YES" attributeType="String"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="lastName" optional="YES" attributeType="String"/>
+        <attribute name="lessonLink" optional="YES" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
+        <attribute name="phoneNumber" optional="YES" attributeType="String"/>
         <relationship name="lessons" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Lesson" inverseName="student" inverseEntity="Lesson"/>
     </entity>
 </model>

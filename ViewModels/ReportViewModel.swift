@@ -9,12 +9,14 @@ import Foundation
 import SwiftUI
 import CoreData
 
-class ReportViewModel: ObservableObject {
+@MainActor
+final class ReportViewModel: ObservableObject {
     private let excelService = ExcelExportService()
     private let lessonViewModel = LessonViewModel()
     
     @Published var selectedYear: Int
     @Published var selectedMonth: Int
+    @Published var generatingReport = false
     
     init() {
         let currentDate = Date()
@@ -23,8 +25,11 @@ class ReportViewModel: ObservableObject {
         selectedMonth = calendar.component(.month, from: currentDate)
     }
     
-    func generateReport() {
-        let lessons = lessonViewModel.fetchLessonsByMonth(year: selectedYear, month: selectedMonth)
+    func generateReport() async {
+        generatingReport = true
+        defer { generatingReport = false }
+        
+        let lessons = await lessonViewModel.fetchLessonsByMonth(year: selectedYear, month: selectedMonth)
         
         if let reportPath = excelService.generateMonthlyReport(lessons: lessons, year: selectedYear, month: selectedMonth) {
             excelService.openFile(at: reportPath)

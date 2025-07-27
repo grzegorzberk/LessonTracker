@@ -35,6 +35,7 @@
 		72620F272E36979E003E492B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		72620F292E36979E003E492B /* LessonTracker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LessonTracker.entitlements; sourceTree = "<group>"; };
 		72620F612E3699FF003E492B /* LessonTracker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LessonTracker.xcdatamodel; sourceTree = "<group>"; };
+		72620FB22E36CC0B003E492B /* LessonTracker-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "LessonTracker-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -103,6 +104,7 @@
 		7243D1432E366C0900DFF5D0 = {
 			isa = PBXGroup;
 			children = (
+				72620FB22E36CC0B003E492B /* LessonTracker-Info.plist */,
 				72620F612E3699FF003E492B /* LessonTracker.xcdatamodel */,
 				72620F3D2E36985C003E492B /* App */,
 				72620F3C2E369853003E492B /* Services */,
@@ -444,6 +446,7 @@
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "LessonTracker-Info.plist";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -472,6 +475,7 @@
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "LessonTracker-Info.plist";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

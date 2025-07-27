@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ReportGeneratorView: View {
     @StateObject private var viewModel = ReportViewModel()
-    @State private var isGeneratingReport = false
     @State private var reportGenerated = false
     
     var body: some View {
@@ -38,17 +37,28 @@ struct ReportGeneratorView: View {
             HStack {
                 Spacer()
                 
-                if isGeneratingReport {
+                if viewModel.generatingReport {
                     ProgressView()
                         .scaleEffect(0.8)
                         .padding(.trailing, 10)
                 }
                 
-                Button(action: generateReport) {
+                Button(action: {
+                    Task {
+                        await viewModel.generateReport()
+                        reportGenerated = true
+                        
+                        // Ukryj komunikat po 3 sekundach
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                            reportGenerated = false
+                        }
+                    }
+                }) {
                     Text("Generuj raport Excel")
                         .padding(.horizontal)
                 }
                 .keyboardShortcut(.return)
+                .disabled(viewModel.generatingReport)
                 
                 Spacer()
             }
@@ -79,21 +89,5 @@ struct ReportGeneratorView: View {
             Spacer()
         }
         .padding()
-    }
-    
-    func generateReport() {
-        isGeneratingReport = true
-        
-        // Symulacja opóźnienia generowania raportu
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            viewModel.generateReport()
-            isGeneratingReport = false
-            reportGenerated = true
-            
-            // Ukryj komunikat po 3 sekundach
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                reportGenerated = false
-            }
-        }
     }
 }
