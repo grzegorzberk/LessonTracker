@@ -100,11 +100,6 @@ struct StudentListView: View {
                                 showStudentDetailSheet = true
                             }
                         )
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            selectedStudent = student
-                            showStudentDetailSheet = true
-                        }
                     }
                 }
                 .listStyle(PlainListStyle())
@@ -119,6 +114,7 @@ struct StudentListView: View {
                 .interactiveDismissDisabled(false)
         }
         .sheet(isPresented: $showStudentDetailSheet, onDismiss: {
+            selectedStudent = nil // Reset wybranego studenta
             viewModel.fetchStudents() // Odśwież dane po zamknięciu szczegółów
         }) {
             if let student = selectedStudent {
@@ -217,9 +213,15 @@ struct StudentRowView: View {
                     .foregroundColor(.red)
             }
             .buttonStyle(BorderlessButtonStyle())
+            .onTapGesture {
+                // Nie rób nic - to zapobiega propagacji do rodzica
+            }
         }
         .padding(.vertical, 8)
         .contentShape(Rectangle())
+        .onTapGesture {
+            onTap?()
+        }
     }
     
     var totalHours: Double {

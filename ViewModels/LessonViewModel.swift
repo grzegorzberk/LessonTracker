@@ -8,6 +8,7 @@
 import Foundation
 import CoreData
 import SwiftUI
+import AppKit
 import EventKit
 
 @MainActor
@@ -258,5 +259,58 @@ final class LessonViewModel: ObservableObject {
         // Otwórz link w domyślnej przeglądarce
         NSWorkspace.shared.open(url)
         print("Otwarto link: \(url.absoluteString)")
+    }
+    
+    func sendEmailToStudent(student: Student) {
+        guard let email = student.email, 
+              !email.isEmpty else {
+            print("Brak adresu email dla ucznia: \(student.name ?? "nieznany")")
+            return
+        }
+        
+        let subject = "Korepetycje - wiadomość od nauczyciela"
+        let body = "Dzień dobry,\n\nPiszę w sprawie korepetycji.\n\nPozdrawiam"
+        
+        let mailtoString = "mailto:\(email)?subject=\(subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&body=\(body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
+        
+        guard let mailtoURL = URL(string: mailtoString) else {
+            print("Nie udało się utworzyć linku mailto")
+            return
+        }
+        
+        NSWorkspace.shared.open(mailtoURL)
+        print("Otwarto klienta poczty dla: \(email)")
+    }
+    
+    func sendInvitationToStudent(student: Student) {
+        guard let email = student.email, 
+              !email.isEmpty else {
+            print("Brak adresu email dla ucznia: \(student.name ?? "nieznany")")
+            return
+        }
+        
+        let subject = "Link do zajęć "
+        let body = """
+        Cześć,
+        
+        Przesyłam link na zajęcia, do zobaczenia!
+        
+        \(student.lessonLink != nil && !student.lessonLink!.isEmpty ? (student.lessonLink!) : "")
+        
+        W razie pytań proszę o kontakt.
+        
+        Pozdrawiam
+        Grzegorz
+        """
+        
+        let mailtoString = "mailto:\(email)?subject=\(subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&body=\(body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
+        
+        guard let mailtoURL = URL(string: mailtoString) else {
+            print("Nie udało się utworzyć linku mailto dla zaproszenia")
+            return
+        }
+        
+        NSWorkspace.shared.open(mailtoURL)
+        print("Wysłano zaproszenie do: \(email)")
     }
 }

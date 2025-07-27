@@ -34,8 +34,8 @@ class ExcelExportService {
         
         // Dodajemy informacje o każdym studencie
         for (student, lessons) in studentLessons {
-            let studentName = student.name ?? "Nieznany uczeń"
-            csvContent += "Uczeń: \(studentName)\n"
+            let studentIdentifier = student.billingId ?? student.name ?? "Nieznany uczeń"
+            csvContent += "Uczeń: \(studentIdentifier)\n"
             csvContent += "Data;Czas trwania (h);Stawka (PLN/h);Kwota (PLN);Status\n"
             
             var studentHours = 0.0

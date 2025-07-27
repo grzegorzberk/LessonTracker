@@ -10,7 +10,7 @@ import SwiftUI
 struct StudentDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel: LessonViewModel
-    @State var student: Student
+    @ObservedObject var student: Student
     
     @State private var name: String
     @State private var firstName: String
@@ -88,13 +88,27 @@ struct StudentDetailView: View {
                 }
                 .keyboardShortcut(.return, modifiers: .command)
                 
-                if let link = student.lessonLink, !link.isEmpty {
-                    Button(action: {
-                        viewModel.openLessonLink(student: student)
-                    }) {
-                        Label("Dołącz do lekcji", systemImage: "video")
+                if !isEditing {
+                    HStack(spacing: 10) {
+                        // Przycisk wysyłania zaproszenia
+                        if let email = student.email, !email.isEmpty {
+                            Button(action: {
+                                viewModel.sendInvitationToStudent(student: student)
+                            }) {
+                                Label("Wyślij zaproszenie", systemImage: "envelope.badge")
+                            }
+                            .help("Wyślij zaproszenie na email")
+                        }
+                        
+                        if let link = student.lessonLink, !link.isEmpty {
+                            Button(action: {
+                                viewModel.openLessonLink(student: student)
+                            }) {
+                                Label("Dołącz do lekcji", systemImage: "video")
+                            }
+                            .help("Otwórz link do lekcji")
+                        }
                     }
-                    .disabled(isEditing)
                 }
             }
             .padding()
@@ -149,7 +163,9 @@ struct StudentDetailView: View {
                                     InfoRow(label: "Telefon", value: phone, iconName: "phone")
                                 }
                                 if let email = student.email, !email.isEmpty {
-                                    InfoRow(label: "Email", value: email, iconName: "envelope")
+                                    InfoRow(label: "Email", value: email, iconName: "envelope", isLink: true) {
+                                        viewModel.sendEmailToStudent(student: student)
+                                    }
                                 }
                                 if let billingId = student.billingId, !billingId.isEmpty {
                                     InfoRow(label: "ID rozliczeniowe", value: billingId, iconName: "creditcard")
@@ -213,6 +229,17 @@ struct StudentDetailView: View {
             }
         }
         .frame(minWidth: 600, minHeight: 500)
+        .onAppear {
+            // Wymuś załadowanie danych Core Data i odśwież dane
+            _ = student.lessonArray.count
+            _ = student.totalHours
+            _ = student.totalValue
+            _ = student.totalUnpaid
+            
+            // Odśwież dane w ViewModel
+            viewModel.fetchStudents()
+            viewModel.fetchLessons()
+        }
     }
 }
 

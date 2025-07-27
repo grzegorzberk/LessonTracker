@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build i Run LessonTracker",
+			"type": "shell",
+			"command": "xcodebuild -project LessonTracker.xcodeproj -scheme LessonTracker -configuration Debug",
+			"group": "build",
+			"isBackground": false
+		}
+	]
+}
