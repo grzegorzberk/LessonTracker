@@ -8,10 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		72620F2E2E36979E003E492B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 72620F272E36979E003E492B /* Assets.xcassets */; };
-		72620F2F2E36979E003E492B /* LessonTracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 72620F2A2E36979E003E492B /* LessonTracker.xcdatamodeld */; };
-		72620F302E36979E003E492B /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72620F2C2E36979E003E492B /* Persistence.swift */; };
-		72620F312E36979E003E492B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72620F282E36979E003E492B /* ContentView.swift */; };
 		72620F322E36979E003E492B /* LessonTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72620F2B2E36979E003E492B /* LessonTrackerApp.swift */; };
+		72620F622E3699FF003E492B /* LessonTracker.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 72620F612E3699FF003E492B /* LessonTracker.xcdatamodel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,11 +34,9 @@
 		7243D15F2E366C0A00DFF5D0 /* LessonTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LessonTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7243D1692E366C0A00DFF5D0 /* LessonTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LessonTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		72620F272E36979E003E492B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		72620F282E36979E003E492B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		72620F292E36979E003E492B /* LessonTracker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LessonTracker.entitlements; sourceTree = "<group>"; };
 		72620F2B2E36979E003E492B /* LessonTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonTrackerApp.swift; sourceTree = "<group>"; };
-		72620F2C2E36979E003E492B /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
-		72620F2D2E36979E003E492B /* LessonTracker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LessonTracker.xcdatamodel; sourceTree = "<group>"; };
+		72620F612E3699FF003E492B /* LessonTracker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LessonTracker.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +48,31 @@
 		7243D16C2E366C0A00DFF5D0 /* LessonTrackerUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = LessonTrackerUITests;
+			sourceTree = "<group>";
+		};
+		72620F392E369839003E492B /* Models */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Models;
+			sourceTree = "<group>";
+		};
+		72620F3A2E369843003E492B /* Views */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Views;
+			sourceTree = "<group>";
+		};
+		72620F3B2E36984A003E492B /* ViewModels */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		72620F3C2E369853003E492B /* Services */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Services;
+			sourceTree = "<group>";
+		};
+		72620F3D2E36985C003E492B /* App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = App;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -84,12 +105,15 @@
 		7243D1432E366C0900DFF5D0 = {
 			isa = PBXGroup;
 			children = (
+				72620F612E3699FF003E492B /* LessonTracker.xcdatamodel */,
+				72620F3D2E36985C003E492B /* App */,
+				72620F3C2E369853003E492B /* Services */,
+				72620F3B2E36984A003E492B /* ViewModels */,
+				72620F3A2E369843003E492B /* Views */,
+				72620F392E369839003E492B /* Models */,
 				72620F272E36979E003E492B /* Assets.xcassets */,
-				72620F282E36979E003E492B /* ContentView.swift */,
 				72620F292E36979E003E492B /* LessonTracker.entitlements */,
-				72620F2A2E36979E003E492B /* LessonTracker.xcdatamodeld */,
 				72620F2B2E36979E003E492B /* LessonTrackerApp.swift */,
-				72620F2C2E36979E003E492B /* Persistence.swift */,
 				7243D1622E366C0A00DFF5D0 /* LessonTrackerTests */,
 				7243D16C2E366C0A00DFF5D0 /* LessonTrackerUITests */,
 				7243D14D2E366C0900DFF5D0 /* Products */,
@@ -120,6 +144,13 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				72620F392E369839003E492B /* Models */,
+				72620F3A2E369843003E492B /* Views */,
+				72620F3B2E36984A003E492B /* ViewModels */,
+				72620F3C2E369853003E492B /* Services */,
+				72620F3D2E36985C003E492B /* App */,
 			);
 			name = LessonTracker;
 			packageProductDependencies = (
@@ -248,9 +279,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				72620F2F2E36979E003E492B /* LessonTracker.xcdatamodeld in Sources */,
-				72620F302E36979E003E492B /* Persistence.swift in Sources */,
-				72620F312E36979E003E492B /* ContentView.swift in Sources */,
+				72620F622E3699FF003E492B /* LessonTracker.xcdatamodel in Sources */,
 				72620F322E36979E003E492B /* LessonTrackerApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -411,6 +440,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = LessonTracker/LessonTracker.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -428,7 +458,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
@@ -438,6 +468,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = LessonTracker/LessonTracker.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -455,7 +486,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};
@@ -567,19 +598,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		72620F2A2E36979E003E492B /* LessonTracker.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				72620F2D2E36979E003E492B /* LessonTracker.xcdatamodel */,
-			);
-			currentVersion = 72620F2D2E36979E003E492B /* LessonTracker.xcdatamodel */;
-			path = LessonTracker.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = 7243D1442E366C0900DFF5D0 /* Project object */;
 }
