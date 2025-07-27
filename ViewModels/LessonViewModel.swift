@@ -79,7 +79,7 @@ class LessonViewModel: ObservableObject {
         newLesson.duration = duration
         newLesson.hourlyRate = hourlyRate
         newLesson.isPaid = false
-        newLesson.student = student
+        //newLesson.student = student
         
         PersistenceController.shared.save()
         fetchLessons()

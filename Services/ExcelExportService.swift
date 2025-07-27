@@ -14,14 +14,14 @@ class ExcelExportService {
         // Grupowanie lekcji według studentów
         var studentLessons: [Student: [Lesson]] = [:]
         
-        for lesson in lessons {
-            if let student = lesson.student {
-                if studentLessons[student] == nil {
-                    studentLessons[student] = []
-                }
-                studentLessons[student]?.append(lesson)
-            }
-        }
+//        for lesson in lessons {
+//            if let student = lesson.student {
+//                if studentLessons[student] == nil {
+//                    studentLessons[student] = []
+//                }
+//                studentLessons[student]?.append(lesson)
+//            }
+//        }
         
         // Tworzymy plik CSV (Excel może otworzyć)
         let fileName = "Raport_\(year)_\(month).csv"
