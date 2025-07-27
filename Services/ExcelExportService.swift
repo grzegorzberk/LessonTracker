@@ -11,9 +11,11 @@ import AppKit
 
 class ExcelExportService {
     func generateMonthlyReport(lessons: [Lesson], year: Int, month: Int) -> URL? {
-        // Grupowanie lekcji według studentów
-        var studentLessons: [Student: [Lesson]] = [:]
+        // Grupowanie lekcji według ID rozliczeniowego
+        var billingGroups: [String: [(Student, [Lesson])]] = [:]
         
+        // Najpierw grupujemy lekcje według studentów
+        var studentLessons: [Student: [Lesson]] = [:]
         for lesson in lessons {
             if let student = lesson.student {
                 if studentLessons[student] == nil {
@@ -21,6 +23,16 @@ class ExcelExportService {
                 }
                 studentLessons[student]?.append(lesson)
             }
+        }
+        
+        // Następnie grupujemy według ID rozliczeniowego
+        for (student, lessons) in studentLessons {
+            let billingId = student.billingId ?? student.name ?? "Brak ID"
+            
+            if billingGroups[billingId] == nil {
+                billingGroups[billingId] = []
+            }
+            billingGroups[billingId]?.append((student, lessons))
         }
         
         // Tworzymy plik CSV (Excel może otworzyć)
@@ -32,36 +44,45 @@ class ExcelExportService {
         var totalHours = 0.0
         var totalIncome = 0.0
         
-        // Dodajemy informacje o każdym studencie
-        for (student, lessons) in studentLessons {
-            let studentIdentifier = student.billingId ?? student.name ?? "Nieznany uczeń"
-            csvContent += "Uczeń: \(studentIdentifier)\n"
-            csvContent += "Data;Czas trwania (h);Stawka (PLN/h);Kwota (PLN);Status\n"
+        // Dodajemy informacje o każdej grupie rozliczeniowej
+        for (billingId, studentGroups) in billingGroups.sorted(by: { $0.key < $1.key }) {
+            csvContent += "ID Rozliczeniowe: \(billingId)\n"
             
-            var studentHours = 0.0
-            var studentIncome = 0.0
+            var groupHours = 0.0
+            var groupIncome = 0.0
             
-            // Dodajemy informacje o lekcjach danego studenta
-            for lesson in lessons.sorted(by: { $0.date! < $1.date! }) {
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+            // Dla każdego studenta w grupie rozliczeniowej
+            for (student, lessons) in studentGroups {
+                csvContent += "Data;Czas trwania (h);Stawka (PLN/h);Kwota (PLN);Status\n"
                 
-                let date = dateFormatter.string(from: lesson.date!)
-                let duration = lesson.duration
-                let rate = lesson.hourlyRate
-                let amount = duration * rate
-                let status = lesson.isPaid ? "Opłacone" : "Nieopłacone"
+                var studentHours = 0.0
+                var studentIncome = 0.0
                 
-                csvContent += "\(date);\(duration);\(rate);\(amount);\(status)\n"
+                // Dodajemy informacje o lekcjach danego studenta
+                for lesson in lessons.sorted(by: { $0.date! < $1.date! }) {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+                    
+                    let date = dateFormatter.string(from: lesson.date!)
+                    let duration = lesson.duration
+                    let rate = lesson.hourlyRate
+                    let amount = duration * rate
+                    let status = lesson.isPaid ? "Opłacone" : "Nieopłacone"
+                    
+                    csvContent += "\(date);\(duration);\(rate);\(amount);\(status)\n"
+                    
+                    studentHours += duration
+                    studentIncome += amount
+                }
                 
-                studentHours += duration
-                studentIncome += amount
+                groupHours += studentHours
+                groupIncome += studentIncome
             }
             
-            csvContent += "Suma godzin: \(studentHours), Należność: \(studentIncome) PLN\n\n"
+            csvContent += "Suma dla ID \(billingId): \(groupHours) h, \(groupIncome) PLN\n\n"
             
-            totalHours += studentHours
-            totalIncome += studentIncome
+            totalHours += groupHours
+            totalIncome += groupIncome
         }
         
         // Podsumowanie całego miesiąca
