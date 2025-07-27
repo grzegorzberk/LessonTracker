@@ -15,8 +15,9 @@ struct LessonListView: View {
     
     var filteredLessons: [Lesson] {
         viewModel.lessons.filter { lesson in
+            let studentName = lesson.student?.displayName ?? lesson.student?.name ?? ""
             let matchesSearch = searchText.isEmpty ||
-                               (lesson.student?.name?.localizedCaseInsensitiveContains(searchText) ?? false)
+                               studentName.localizedCaseInsensitiveContains(searchText)
             
             return showOnlyUnpaid ? !lesson.isPaid && matchesSearch : matchesSearch
         }
@@ -79,7 +80,7 @@ struct LessonRowView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(lesson.student?.name ?? "Nieznany uczeń")
+                Text(lesson.student?.displayName ?? "Nieznany uczeń")
                     .font(.headline)
                 
                 Text(formattedDate)

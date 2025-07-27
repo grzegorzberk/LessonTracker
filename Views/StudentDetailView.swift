@@ -119,7 +119,8 @@ struct StudentDetailView: View {
     
     private var displayView: some View {
         VStack(alignment: .leading, spacing: 15) {
-            if !student.firstName!.isEmpty || !student.lastName!.isEmpty {
+            if let firstName = student.firstName, !firstName.isEmpty,
+               let lastName = student.lastName, !lastName.isEmpty {
                 InfoRow(label: "Imię i nazwisko", value: student.fullName)
             }
             

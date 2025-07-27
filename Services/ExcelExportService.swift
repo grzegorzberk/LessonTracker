@@ -34,8 +34,20 @@ class ExcelExportService {
         
         // Dodajemy informacje o każdym studencie
         for (student, lessons) in studentLessons {
-            let studentName = student.name ?? "Nieznany uczeń"
+            let studentName = student.displayName
             csvContent += "Uczeń: \(studentName)\n"
+            
+            // Dodaj dodatkowe informacje o studencie
+            if let email = student.email, !email.isEmpty {
+                csvContent += "Email: \(email)\n"
+            }
+            if let phone = student.phoneNumber, !phone.isEmpty {
+                csvContent += "Telefon: \(phone)\n"
+            }
+            if let billingId = student.billingId, !billingId.isEmpty {
+                csvContent += "ID rozliczeń: \(billingId)\n"
+            }
+            
             csvContent += "Data;Czas trwania (h);Stawka (PLN/h);Kwota (PLN);Status\n"
             
             var studentHours = 0.0
