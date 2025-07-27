@@ -8,11 +8,13 @@
 import Foundation
 import CoreData
 import SwiftUI
+import EventKit
 
 class LessonViewModel: ObservableObject {
     private let viewContext = PersistenceController.shared.container.viewContext
     @Published var students: [Student] = []
     @Published var lessons: [Lesson] = []
+    @StateObject private var calendarService = CalendarService()
     
     init() {
         fetchStudents()
@@ -61,16 +63,35 @@ class LessonViewModel: ObservableObject {
         }
     }
     
-    func addStudent(name: String) {
+    func addStudent(name: String, firstName: String = "", lastName: String = "", phoneNumber: String = "", email: String = "", billingId: String = "", lessonLink: String = "") {
         let newStudent = Student(context: viewContext)
         newStudent.id = UUID()
         newStudent.name = name
+        newStudent.firstName = firstName
+        newStudent.lastName = lastName
+        newStudent.phoneNumber = phoneNumber
+        newStudent.email = email
+        newStudent.billingId = billingId
+        newStudent.lessonLink = lessonLink
         
         PersistenceController.shared.save()
         fetchStudents()
     }
     
-    func addLesson(studentId: UUID, date: Date, duration: Double, hourlyRate: Double) {
+    func updateStudent(_ student: Student, name: String, firstName: String, lastName: String, phoneNumber: String, email: String, billingId: String, lessonLink: String) {
+        student.name = name
+        student.firstName = firstName
+        student.lastName = lastName
+        student.phoneNumber = phoneNumber
+        student.email = email
+        student.billingId = billingId
+        student.lessonLink = lessonLink
+        
+        PersistenceController.shared.save()
+        fetchStudents()
+    }
+    
+    func addLesson(studentId: UUID, date: Date, duration: Double, hourlyRate: Double, addToCalendar: Bool = false) {
         guard let student = students.first(where: { $0.id == studentId }) else { return }
         
         let newLesson = Lesson(context: viewContext)
@@ -83,6 +104,15 @@ class LessonViewModel: ObservableObject {
         
         PersistenceController.shared.save()
         fetchLessons()
+        
+        // Dodaj do kalendarza jeśli żądane
+        if addToCalendar {
+            Task { @MainActor in
+                if await calendarService.requestAccess() {
+                    await calendarService.addLessonToCalendar(lesson: newLesson, student: student)
+                }
+            }
+        }
     }
     
     func toggleLessonPaid(lesson: Lesson) {
@@ -107,5 +137,19 @@ class LessonViewModel: ObservableObject {
         PersistenceController.shared.save()
         fetchStudents()
         fetchLessons()
+    }
+    
+    // MARK: - Calendar Integration
+    
+    var calendarServiceInstance: CalendarService {
+        return calendarService
+    }
+    
+    func requestCalendarAccess() async -> Bool {
+        return await calendarService.requestAccess()
+    }
+    
+    func getUpcomingLessons(for student: Student? = nil) -> [EKEvent] {
+        return calendarService.getUpcomingLessons(for: student)
     }
 }

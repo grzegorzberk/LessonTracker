@@ -25,11 +25,17 @@ struct ContentView: View {
                 }
                 .tag(1)
             
+            CalendarView(viewModel: lessonViewModel)
+                .tabItem {
+                    Label("Kalendarz", systemImage: "calendar")
+                }
+                .tag(2)
+            
             ReportGeneratorView()
                 .tabItem {
                     Label("Raporty", systemImage: "chart.bar.doc.horizontal")
                 }
-                .tag(2)
+                .tag(3)
         }
         .padding()
         .frame(minWidth: 800, minHeight: 600)

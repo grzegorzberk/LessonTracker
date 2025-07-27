@@ -12,6 +12,9 @@ struct StudentListView: View {
     @State private var newStudentName = ""
     @State private var showingDeleteAlert = false
     @State private var studentToDelete: Student? = nil
+    @State private var showingAddStudentSheet = false
+    @State private var selectedStudent: Student? = nil
+    @State private var showingStudentDetail = false
     
     var body: some View {
         VStack {
@@ -20,13 +23,18 @@ struct StudentListView: View {
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .frame(maxWidth: 300)
                 
-                Button("Dodaj") {
+                Button("Dodaj ucznia") {
                     if !newStudentName.isEmpty {
                         viewModel.addStudent(name: newStudentName)
                         newStudentName = ""
                     }
                 }
                 .disabled(newStudentName.isEmpty)
+                
+                Button("Dodaj szczegółowo") {
+                    showingAddStudentSheet = true
+                }
+                .buttonStyle(.bordered)
                 
                 Spacer()
             }
@@ -48,6 +56,10 @@ struct StudentListView: View {
                             onDelete: {
                                 studentToDelete = student
                                 showingDeleteAlert = true
+                            },
+                            onTap: {
+                                selectedStudent = student
+                                showingStudentDetail = true
                             }
                         )
                     }
@@ -58,6 +70,14 @@ struct StudentListView: View {
         .onAppear {
             viewModel.fetchStudents()
             viewModel.fetchLessons()
+        }
+        .sheet(isPresented: $showingAddStudentSheet) {
+            AddStudentView(viewModel: viewModel)
+        }
+        .sheet(isPresented: $showingStudentDetail) {
+            if let student = selectedStudent {
+                StudentDetailView(viewModel: viewModel, student: student)
+            }
         }
         .alert("Usunąć ucznia?", isPresented: $showingDeleteAlert) {
             Button("Anuluj", role: .cancel) {}
@@ -83,33 +103,48 @@ struct StudentRowView: View {
     let student: Student
     let lessons: [Lesson]
     let onDelete: () -> Void
+    let onTap: () -> Void
     
     var body: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading) {
-                Text(student.name ?? "")
-                    .font(.headline)
-                
-                Text("Liczba lekcji: \(lessons.count)")
+        Button(action: onTap) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(student.displayName)
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                    
+                    if let email = student.email, !email.isEmpty {
+                        Text(email)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    if let phone = student.phoneNumber, !phone.isEmpty {
+                        Text(phone)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack {
+                        Text("Lekcje: \(lessons.count)")
+                        Text("Godziny: \(totalHours, specifier: "%.1f") h")
+                        Text("Wartość: \(totalValue, specifier: "%.2f") PLN")
+                    }
+                    .font(.subheadline)
                     .foregroundColor(.gray)
-                
-                HStack {
-                    Text("Suma godzin: \(totalHours, specifier: "%.1f") h")
-                    Text("Wartość: \(totalValue, specifier: "%.2f") PLN")
                 }
-                .font(.subheadline)
-                .foregroundColor(.gray)
+                
+                Spacer()
+                
+                Button(action: onDelete) {
+                    Image(systemName: "trash")
+                        .foregroundColor(.red)
+                }
+                .buttonStyle(BorderlessButtonStyle())
             }
-            
-            Spacer()
-            
-            Button(action: onDelete) {
-                Image(systemName: "trash")
-                    .foregroundColor(.red)
-            }
-            .buttonStyle(BorderlessButtonStyle())
+            .padding(.vertical, 4)
         }
-        .padding(.vertical, 4)
+        .buttonStyle(PlainButtonStyle())
     }
     
     var totalHours: Double {

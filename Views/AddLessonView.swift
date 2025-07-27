@@ -17,6 +17,7 @@ struct AddLessonView: View {
     @State private var hourlyRate: Double = 60.0
     @State private var showAddStudentAlert = false
     @State private var newStudentName = ""
+    @State private var addToCalendar = true
     
     var body: some View {
         VStack(spacing: 20) {
@@ -32,7 +33,7 @@ struct AddLessonView: View {
                     Picker("Uczeń", selection: $selectedStudentId) {
                         Text("Wybierz ucznia").tag(nil as UUID?)
                         ForEach(viewModel.students, id: \.id) { student in
-                            Text(student.name ?? "").tag(student.id as UUID?)
+                            Text(student.displayName).tag(student.id as UUID?)
                         }
                     }
                     .pickerStyle(MenuPickerStyle())
@@ -66,6 +67,8 @@ struct AddLessonView: View {
                     Text("\(hourlyRate * duration, specifier: "%.2f") PLN")
                         .bold()
                 }
+                
+                Toggle("Dodaj do kalendarza", isOn: $addToCalendar)
             }
             .padding()
             
@@ -83,7 +86,8 @@ struct AddLessonView: View {
                             studentId: studentId,
                             date: date,
                             duration: duration,
-                            hourlyRate: hourlyRate
+                            hourlyRate: hourlyRate,
+                            addToCalendar: addToCalendar
                         )
                         dismiss()
                     }

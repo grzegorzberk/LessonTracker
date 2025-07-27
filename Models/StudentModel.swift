@@ -9,6 +9,24 @@ import Foundation
 import CoreData
 
 extension Student {
+    var fullName: String {
+        let first = firstName ?? ""
+        let last = lastName ?? ""
+        if !first.isEmpty && !last.isEmpty {
+            return "\(first) \(last)"
+        } else if !first.isEmpty {
+            return first
+        } else if !last.isEmpty {
+            return last
+        } else {
+            return name ?? ""
+        }
+    }
+    
+    var displayName: String {
+        return fullName.isEmpty ? (name ?? "") : fullName
+    }
+    
     var lessonArray: [Lesson] {
         let set = lessons as? Set<Lesson> ?? []
         return Array(set).sorted { $0.date! > $1.date! }
