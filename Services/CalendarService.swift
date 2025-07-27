@@ -59,26 +59,30 @@ final class CalendarService {
             // Dla macOS 14+ używamy nowszej metody
             return await withCheckedContinuation { continuation in
                 eventStore.requestFullAccessToEvents { [weak self] granted, error in
-                    if let error = error {
-                        print("Błąd dostępu do kalendarza: \(error)")
+                    DispatchQueue.main.async {
+                        if let error = error {
+                            print("Błąd dostępu do kalendarza: \(error)")
+                        }
+                        
+                        print("Dostęp do kalendarza: \(granted ? "przyznany" : "odrzucony")")
+                        self?.calendarAccessGranted = granted
+                        continuation.resume(returning: granted)
                     }
-                    
-                    print("Dostęp do kalendarza: \(granted ? "przyznany" : "odrzucony")")
-                    self?.calendarAccessGranted = granted
-                    continuation.resume(returning: granted)
                 }
             }
         } else {
             // Dla starszych wersji macOS
             return await withCheckedContinuation { continuation in
                 eventStore.requestAccess(to: .event) { [weak self] granted, error in
-                    if let error = error {
-                        print("Błąd dostępu do kalendarza: \(error)")
+                    DispatchQueue.main.async {
+                        if let error = error {
+                            print("Błąd dostępu do kalendarza: \(error)")
+                        }
+                        
+                        print("Dostęp do kalendarza: \(granted ? "przyznany" : "odrzucony")")
+                        self?.calendarAccessGranted = granted
+                        continuation.resume(returning: granted)
                     }
-                    
-                    print("Dostęp do kalendarza: \(granted ? "przyznany" : "odrzucony")")
-                    self?.calendarAccessGranted = granted
-                    continuation.resume(returning: granted)
                 }
             }
         }
